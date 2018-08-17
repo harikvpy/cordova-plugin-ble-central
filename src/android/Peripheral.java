@@ -81,6 +81,17 @@ public class Peripheral extends BluetoothGattCallback {
 
     }
 
+    public boolean unbond() {
+        try {
+            java.lang.reflect.Method mi = device.getClass().getMethod("removeBond");
+            Boolean returnValue = (Boolean) mi.invoke(device);
+            return returnValue.booleanValue();
+        } catch (Exception e) {
+            LOG.e("BLE", e.getMessage());
+        }
+        return false;
+    }
+
     private void gattConnect() {
 
         if (gatt != null) {

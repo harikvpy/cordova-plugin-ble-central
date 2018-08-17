@@ -78,6 +78,9 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     private static final String START_STATE_NOTIFICATIONS = "startStateNotifications";
     private static final String STOP_STATE_NOTIFICATIONS = "stopStateNotifications";
 
+    private static final String BOND = "bond";
+    private static final String UNBOND = "unbond";
+
     // callbacks
     CallbackContext discoverCallback;
     private CallbackContext enableBluetoothCallback;
@@ -120,7 +123,7 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
     @Override
     public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-        LOG.d(TAG, "action = " + action);
+        LOG.i(TAG, "action = " + action);
 
         if (bluetoothAdapter == null) {
             Activity activity = cordova.getActivity();
@@ -297,6 +300,16 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
             getBondedDevices(callbackContext);
 
+        } else if (action.equals(BOND)) {
+
+            String macAddress = args.getString(0);
+            bond(callbackContext, macAddress);
+
+        } else if (action.equals(UNBOND)) {
+
+            String macAddress = args.getString(0);
+            unbond(callbackContext, macAddress);
+
         } else {
 
             validAction = false;
@@ -305,6 +318,32 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
         return validAction;
     }
+
+    private void bond(CallbackContext callbackContext, String macAddress) {
+        LOG.e(TAG, "bond request, device: " + macAddress);
+        callbackContext.success();
+    }
+
+    private void unbond(CallbackContext callbackContext, String macAddress) {
+        LOG.i(TAG, "unbond request, device: " + macAddress);
+
+        Peripheral peripheral = peripherals.get(macAddress);
+        if (peripheral != null) {
+            boolean result = peripheral.unbond();
+            if (result) {
+                //LOG.v(TAG, "Successfully unbonded peripheral " + macAddress + ", removing it from our table");
+                peripherals.remove(macAddress);
+                callbackContext.success();
+            } else {
+                callbackContext.error("Error unbonding " + macAddress);
+            }
+        } else {
+            String message = "Peripheral " + macAddress + " not found.";
+            LOG.w(TAG, message);
+            callbackContext.error(message);
+        }
+    }
+
 
     private void getBondedDevices(CallbackContext callbackContext) {
         JSONArray bonded = new JSONArray();
