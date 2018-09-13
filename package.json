@@ -1,13 +1,13 @@
 {
   "name": "cordova-plugin-ble-central",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "Bluetooth Low Energy (BLE) Central Plugin",
   "cordova": {
     "id": "cordova-plugin-ble-central",
     "platforms": [
       "ios",
       "android",
-      "wp8"
+      "windows"
     ]
   },
   "repository": {
@@ -24,12 +24,22 @@
     "smart",
     "ecosystem:cordova",
     "cordova-ios",
-    "cordova-android"
+    "cordova-android",
+    "cordova-windows"
   ],
   "author": "Don Coleman <don.coleman@gmail.com>",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/don/cordova-plugin-ble-central/issues"
   },
-  "homepage": "https://github.com/don/cordova-plugin-ble-central#readme"
+  "homepage": "https://github.com/don/cordova-plugin-ble-central#readme",
+  "devDependencies": {
+    "@types/cordova": "0.0.34",
+    "@types/winrt-uwp": "0.0.19",
+    "cordova-paramedic": "git+https://github.com/apache/cordova-paramedic.git"
+  },
+  "scripts": {
+    "test:windows": "cordova-paramedic --config .paramedic.windows.config.js"
+  },
+  "dependencies": {}
 }

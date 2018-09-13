@@ -101,9 +101,11 @@
 
         <config-file target="package.appxmanifest" parent="/Package/Capabilities" versions=">=10.0.0">
             <DeviceCapability Name="bluetooth"/>
+            <DeviceCapability Name="radios"/>
         </config-file>
         <config-file target="package.appxmanifest" parent="/Package/Capabilities" versions="<10.0.0">
             <DeviceCapability Name="bluetooth"/>
+            <DeviceCapability Name="radios"/>
         </config-file>
 
         <js-module src="src/windows/BLECentralPlugin.js" name="BLECentralPlugin">
