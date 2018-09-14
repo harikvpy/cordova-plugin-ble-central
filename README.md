@@ -250,7 +250,7 @@ Connect to a peripheral.
 
 ### Description
 
-Function `connect` connects to a BLE peripheral. The callback is long running. The connect callback will be called when the connection is successful. Service and characteristic info will be passed to the connect callback in the [peripheral object](#peripheral-data). 
+Function `connect` connects to a BLE peripheral. The callback is long running. The connect callback will be called when the connection is successful. Service and characteristic info will be passed to the connect callback in the [peripheral object](#peripheral-data).
 
 The disconnect callback is called if the connection fails, or later if the peripheral disconnects. When possible, a peripheral object is passed to the failure callback. The disconnect callback is only called when the peripheral initates the disconnection. The disconnect callback is not called when the application calls [ble.disconnect](#disconnect). The disconnect callback is how your app knows the peripheral inintiated a disconnect.
 
@@ -278,7 +278,7 @@ Automatically connect to a device when it is in range of the phone. When the dev
 
 Calling [ble.disconnect](#disconnect) will stop the automatic reconnection.
 
-Both the connect and disconnect callbacks can be called many times as the device connects and disconnects. Do not wrap this function in a Promise or Observable. 
+Both the connect and disconnect callbacks can be called many times as the device connects and disconnects. Do not wrap this function in a Promise or Observable.
 
 On iOS, [background notifications on ios](#background-notifications-on-ios) must be enabled if you want to run in the background. On Android, this relies on the autoConnect argument of `BluetoothDevice.connectGatt()`. Not all Android devices implement this feature correctly.
 
@@ -337,7 +337,7 @@ refreshDeviceCache
 ### Description
 
 Some poorly behaved devices show old cached services and characteristics info. (Usually because they
-don't implement Service Changed 0x2a05 on Generic Attribute Service 0x1801 and the central doesn't know 
+don't implement Service Changed 0x2a05 on Generic Attribute Service 0x1801 and the central doesn't know
 the data needs to be refreshed.) This method might help.
 
 *NOTE* Since this uses an undocumented API it's not guaranteed to work.
@@ -349,7 +349,7 @@ the data needs to be refreshed.) This method might help.
 ### Parameters
 
 - __deviceId__: UUID or MAC address of the peripheral
-- __timeoutMillis__: timeout in milliseconds after refresh before discovering services  
+- __timeoutMillis__: timeout in milliseconds after refresh before discovering services
 - __success__: Success callback function invoked with the refreshed peripheral. [optional]
 - __failure__: Error callback function, invoked when an error occurs. [optional]
 
@@ -839,7 +839,7 @@ Note that iOS uses the string value of the constants for the [Advertisement Data
             "kCBAdvDataManufacturerData": {}, // arraybuffer data not shown
             "kCBAdvDataServiceUUIDs": [
                 "721b"
-            ],  
+            ],
             "kCBAdvDataIsConnectable": true,
             "kCBAdvDataServiceData": {
                 "BBB0": {}   // arraybuffer data not shown
@@ -913,6 +913,25 @@ Add a new section to config.xml
     </platform>
 
 See [ble-background](https://github.com/don/ble-background) example project for more details.
+
+# Windows Support
+Windows UWP support is provided though as of now it's limited to scanning peripherals. For building a UWP app, use `ionic cordova platform add cordova-windows@6.0.0`. The default `platform add windows` uses `cordova-windows@5.0.0` which defaults to Windows 8.1 as the build target.
+
+Automated tests have been expanded to include tests for the API which are supported under Windows. Testing can be done on a Windows 10 system (section below says testing is to be done on an android device) which would result in the windows plugin code being used. Testing would require an external BLE peripheral, for which a virtual GATT server running on Android phone is used. The virtual GATT server is provided using the app [BLE Tool](https://play.google.com/store/apps/details?id=com.cozyoz.bletool). Make sure to customize the GATT Server as below:
+
+* Set `Device Name` to `bletest`.
+* Add service UUIDs to advertising data.
+* Change `Advertising Mode` to `LOW LATENCY`.
+* Custom GATT service UUID should be set to `0000fff1-1000-8000-00805f9b34fb`
+
+To improve testing, [`cordova-paramedic`](https://github.com/apache/cordova-paramedic) has been added to the project. Along with this, the command `test:windows` has also been added to `package.json`. This command uses `cordova-paramedic` to create a test cordova project, add `cordova-plugin-ble-central` to this project and the run all the automated tests in `tests/tests.js`.
+
+# Windows Development Environment
+A quick start approach is to the run the tests using `npm test:windows`, copy out the temporary Visual Studio project under `platforms/windows` created by `cordova-paramedic` to your own projects folder, load the `CordovaApp.sln` in Visual Studio and then work on it. Note that the folder will contain two copies of the plugin. One under `platforms/windows/plugins/cordova-plugin-ble-central` and another under `platforms/windows/www/plugins/cordova-plugin-ble-central`.
+
+Assuming that you're working with Visual Studio and its edit/build/debug cycle, you should be working on the source file under the latter folder. The former is the original plugin code that is copied over to the `www/plugins` folder as part of the `cordova prepare` process.
+
+Being a project created for automated tests, when run, the Jasmine tests in `tests/tests.js` would be executed which in turn would invoke the relevant API depending on your unit test case design. Therefore the approach to development ought to be write the unit test for the API being written followed by the API implementation itself.
 
 # Testing the Plugin
 
