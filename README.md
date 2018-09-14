@@ -915,9 +915,9 @@ Add a new section to config.xml
 See [ble-background](https://github.com/don/ble-background) example project for more details.
 
 # Windows Support
-Windows UWP support is provided though as of now it's limited to scanning peripherals. For building a UWP app, use `ionic cordova platform add cordova-windows@6.0.0`. The default `platform add windows` uses `cordova-windows@5.0.0` which defaults to Windows 8.1 as the build target.
+Windows UWP support is introduced though as of now it's limited to scanning for peripherals. For building a Windows UWP app, use `ionic cordova platform add cordova-windows@6.0.0`. The default `cordova platform add windows` command uses `cordova-windows@5.0.0` which defaults to Windows 8.1 as the build target.
 
-Automated tests have been expanded to include tests for the API which are supported under Windows. Testing can be done on a Windows 10 system (section below says testing is to be done on an android device) which would result in the windows plugin code being used. Testing would require an external BLE peripheral, for which a virtual GATT server running on Android phone is used. The virtual GATT server is provided using the app [BLE Tool](https://play.google.com/store/apps/details?id=com.cozyoz.bletool). Make sure to customize the GATT Server as below:
+Automated tests have been expanded to include tests for the API which are supported under Windows. Also, testing can be done on a Windows 10 system (section below says testing is to be done on an Android device) which would result in the Windows plugin code being used. Testing would require an external BLE peripheral, for which a virtual GATT server running on Android phone is used. The virtual GATT server provided using the app [BLE Tool](https://play.google.com/store/apps/details?id=com.cozyoz.bletool) can be used for this. Make sure to customize the GATT Server as below:
 
 * Set `Device Name` to `bletest`.
 * Add service UUIDs to advertising data.
@@ -927,11 +927,16 @@ Automated tests have been expanded to include tests for the API which are suppor
 To improve testing, [`cordova-paramedic`](https://github.com/apache/cordova-paramedic) has been added to the project. Along with this, the command `test:windows` has also been added to `package.json`. This command uses `cordova-paramedic` to create a test cordova project, add `cordova-plugin-ble-central` to this project and the run all the automated tests in `tests/tests.js`.
 
 # Windows Development Environment
-A quick start approach is to the run the tests using `npm test:windows`, copy out the temporary Visual Studio project under `platforms/windows` created by `cordova-paramedic` to your own projects folder, load the `CordovaApp.sln` in Visual Studio and then work on it. Note that the folder will contain two copies of the plugin. One under `platforms/windows/plugins/cordova-plugin-ble-central` and another under `platforms/windows/www/plugins/cordova-plugin-ble-central`.
+A quick start approach is to the run the tests using `npm test:windows`, copy out the temporary cordova project (created in `C:\Users\<username>\AppData\Local\Temp\<tmp-XXXXXXXXX>`. Exact location will be printed to the console by `cordova-paramedic`) created by `cordova-paramedic` to your own projects folder, load the `platforms/windows/CordovaApp.sln` in Visual Studio and then work on it. Note that the folder will contain two copies of `cordova-plugin-ble-central`. One under `platforms/windows/plugins/cordova-plugin-ble-central` and another under `platforms/windows/www/plugins/cordova-plugin-ble-central`.
 
 Assuming that you're working with Visual Studio and its edit/build/debug cycle, you should be working on the source file under the latter folder. The former is the original plugin code that is copied over to the `www/plugins` folder as part of the `cordova prepare` process.
 
-Being a project created for automated tests, when run, the Jasmine tests in `tests/tests.js` would be executed which in turn would invoke the relevant API depending on your unit test case design. Therefore the approach to development ought to be write the unit test for the API being written followed by the API implementation itself.
+Being a project created for automated tests, when run, the Jasmine tests in `tests/tests.js` would be executed which in turn would invoke the relevant API depending on your unit test case design. Therefore the approach to development ought to be write the unit test for the API being written followed by the API implementation itself. Finally, when you're satisfied that the API works as expected, you can copy-paste the code to `BLECentralPlugin.js` in the original `cordova-plugin-ble-central` repo. Note that you cannot copy the entire file as `cordova build` process wraps the plugin code in a `cordova.define` closure as below:
+
+    cordova.define("cordova-plugin-ble-central.BLECentralPlugin", function(require, exports, module) {
+        // .. original plugin code
+    }
+
 
 # Testing the Plugin
 
